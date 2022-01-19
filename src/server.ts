@@ -1,10 +1,16 @@
 import express from 'express'
+import mongoose from 'mongoose'
 import morgan from 'morgan'
 import path from 'path'
 import cors from 'cors'
 import dotenv from 'dotenv'
 
+import connectDB from '../config/db'
+
 dotenv.config({ path: path.resolve(__dirname, '../config/config.env') })
+
+// connect mongodb
+connectDB()
 
 const app = express()
 
