@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
+    "start": "NODE_ENV=production ts-node src/server",
     "dev": "nodemon src/server.ts"
   },
   "keywords": [],

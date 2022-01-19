@@ -5,9 +5,10 @@ import path from 'path'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import Product from './models/Product'
-
 import connectDB from '../config/db'
+import products from './routers/products'
 
+// get env file
 dotenv.config({ path: path.resolve(__dirname, '../config/config.env') })
 
 // connect mongodb
@@ -15,27 +16,37 @@ connectDB()
 
 const app = express()
 
-app.use(cors())
 // middleware
+app.use(cors())
 app.use(express.json())
-app.use(morgan('tiny'))
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('tiny'))
+}
 
 const api = process.env.API_URL
 
-app.get(`${api}/products`, async (req, res) => {
-  const productList = await Product.find()
-  res.send(productList)
+// setting router
+app.use(`${api}/products`, products)
+
+const PORT = process.env.PORT || 3000
+const server = app.listen(PORT, () => {
+  console.info(`Server runing is ${process.env.NODE_ENV} mode on port ${PORT}`)
 })
 
-app.post(`${api}/products`, async (req, res) => {
-  const product = await Product.create(req.body)
-
-  res.status(201).json({
-    success: true,
-    data: product,
-  })
+process.on('unhandledRejection', (err: Error) => {
+  console.info(`Error: ${err.message}`)
+  server.close(() => process.exit(1))
 })
+// app.get(`${api}/products`, async (req, res) => {
+//   const productList = await Product.find()
+//   res.send(productList)
+// })
 
-app.listen(3000, () => {
-  console.info('server start')
-})
+// app.post(`${api}/products`, async (req, res) => {
+//   const product = await Product.create(req.body)
+
+//   res.status(201).json({
+//     success: true,
+//     data: product,
+//   })
+// })
